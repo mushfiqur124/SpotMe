@@ -15,7 +15,7 @@ struct ChatListView: View {
     var body: some View {
         ScrollViewReader { proxy in
             ScrollView(.vertical, showsIndicators: false) {
-                LazyVStack(spacing: 8) {
+                LazyVStack(spacing: 12) { // Increased spacing for ChatGPT look
                     // Welcome message if no messages
                     if messages.isEmpty {
                         welcomeMessage
@@ -38,11 +38,12 @@ struct ChatListView: View {
                     }
                     
                     // Bottom spacer for natural scrolling
-                    Spacer(minLength: 20)
+                    Spacer(minLength: 30)
                         .id("bottom")
                 }
-                .padding(.top, 16)
+                .padding(.top, 20) // More top padding like ChatGPT
             }
+            .background(Color.chatGPTBackground) // Apply ChatGPT background
             .onChange(of: messages.count) { _ in
                 scrollToBottom(proxy: proxy)
             }

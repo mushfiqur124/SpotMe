@@ -19,19 +19,20 @@ struct ChatInputBar: View {
     
     var body: some View {
         VStack(spacing: 0) {
-            // Divider
+            // Subtle divider for ChatGPT look
             Divider()
+                .background(Color(.systemGray6))
             
-            HStack(alignment: .bottom, spacing: 8) {
+            HStack(alignment: .bottom, spacing: 12) {
                 // Text input
                 inputField
                 
                 // Send button
                 sendButton
             }
-            .padding(.horizontal, 16)
-            .padding(.vertical, 12)
-            .background(Color(.systemBackground))
+            .padding(.horizontal, 20) // Match ChatGPT padding
+            .padding(.vertical, 16) // More vertical padding like ChatGPT
+            .background(Color.chatGPTBackground)
         }
     }
     
@@ -39,23 +40,25 @@ struct ChatInputBar: View {
     
     private var inputField: some View {
         ZStack(alignment: .leading) {
-            // Background
-            RoundedRectangle(cornerRadius: 20)
+            // ChatGPT-style background
+            RoundedRectangle(cornerRadius: 22) // Slightly more rounded like ChatGPT
                 .fill(Color(.systemGray6))
+                .stroke(Color(.systemGray5), lineWidth: 0.5) // Subtle border
                 .frame(height: max(minHeight, min(textHeight, maxHeight)))
             
             // Placeholder
             if text.isEmpty {
-                Text("Log your workout...")
+                Text("Message SpotMe...")
                     .foregroundColor(.secondary)
-                    .padding(.horizontal, 16)
+                    .padding(.horizontal, 18)
                     .padding(.vertical, 12)
+                    .font(.body)
             }
             
             // Text editor
             TextView(text: $text, height: $textHeight)
-                .padding(.horizontal, 12)
-                .padding(.vertical, 8)
+                .padding(.horizontal, 14)
+                .padding(.vertical, 10)
                 .frame(height: max(minHeight, min(textHeight, maxHeight)))
         }
     }
@@ -63,8 +66,8 @@ struct ChatInputBar: View {
     private var sendButton: some View {
         Button(action: sendMessage) {
             Image(systemName: "arrow.up.circle.fill")
-                .font(.system(size: 28))
-                .foregroundColor(canSend ? .blue : .gray)
+                .font(.system(size: 30))
+                .foregroundColor(canSend ? .primary : Color(.systemGray4))
         }
         .disabled(!canSend)
         .animation(.easeInOut(duration: 0.2), value: canSend)

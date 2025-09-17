@@ -15,36 +15,39 @@ struct ChatView: View {
     
     var body: some View {
         NavigationView {
-            GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    // Chat messages
-                    ChatListView(
-                        messages: chatViewModel.currentMessages,
-                        isTyping: chatViewModel.isTyping
-                    )
-                    
-                    // Input bar
-                    ChatInputBar(text: $inputText) { message in
-                        chatViewModel.sendMessage(message)
+            VStack(spacing: 0) {
+                // Chat messages
+                ChatListView(
+                    messages: chatViewModel.currentMessages,
+                    isTyping: chatViewModel.isTyping
+                )
+                
+                // Input bar
+                ChatInputBar(text: $inputText) { message in
+                    chatViewModel.sendMessage(message)
+                }
+            }
+            .background(Color.chatGPTBackground) // ChatGPT-style background
+            .navigationTitle(chatViewModel.currentSessionTitle)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    Button(action: { showSidebar = true }) {
+                        Image(systemName: "sidebar.left")
+                            .foregroundColor(.primary)
                     }
                 }
-                .navigationTitle(chatViewModel.currentSessionTitle)
-                .navigationBarTitleDisplayMode(.inline)
-                .toolbar {
-                    ToolbarItem(placement: .navigationBarLeading) {
-                        Button(action: { showSidebar = true }) {
-                            Image(systemName: "sidebar.left")
-                        }
-                    }
-                    
-                    ToolbarItem(placement: .navigationBarTrailing) {
-                        Button(action: chatViewModel.startNewSession) {
-                            Image(systemName: "plus")
-                        }
+                
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button(action: chatViewModel.startNewSession) {
+                        Image(systemName: "plus")
+                            .foregroundColor(.primary)
                     }
                 }
             }
+            .toolbarBackground(Color.chatGPTBackground, for: .navigationBar)
         }
+        .navigationViewStyle(StackNavigationViewStyle()) // Prevent sidebar on iPad
         .sheet(isPresented: $showSidebar) {
             Sidebar(
                 selectedSession: $chatViewModel.selectedSession,
