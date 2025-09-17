@@ -1,0 +1,107 @@
+# Cursor Rules File
+
+## Project Configuration
+project:
+  name: SpotMe
+  platform: iOS
+  language: Swift
+  ui_framework: SwiftUI
+  database: CoreData
+  ai_layer: LLM (GPT-4o mini / Gemini Flash-Lite)
+  coding_style: Swift best practices (SwiftLint recommended)
+
+## General Guidelines
+general_guidelines:
+  - Always refer to PRD for features and scope
+  - Modular, reusable components
+  - Prioritize readability
+  - Include comments for non-obvious logic
+  - Use Swift naming conventions
+  - MVVM for SwiftUI views
+  - DRY code
+  - Minimize hard-coded strings, use constants/enums
+
+## CoreData Guidelines
+coredata_guidelines:
+  - Entities: Workout, Exercise
+  - Workout: date, dayType, notes
+  - Exercise: name, sets, reps, weight, totalWeight, prFlag
+  - Async queries if possible
+  - CRUD helper functions
+  - Fetch last 7 days/month
+  - Error handling & logging
+
+## UI Guidelines
+ui_guidelines:
+  - Reusable components: ChatBubble, ChatInputBar, ChatList, TypingIndicator, Sidebar
+  - Mimic ChatGPT iOS app
+  - Streaming AI responses
+  - Light/dark mode
+  - Responsive & dynamic text support
+  - MVP animation: streaming text only
+
+## AI Integration Guidelines
+ai_integration_guidelines:
+  - Use system prompt for Gen Z fitness coach
+  - Include last 7 days of workouts
+  - Parse AI output to structured CoreData
+  - Clarify ambiguous exercise names
+  - Plate/barbell math handled automatically
+  - Limit prompt size (~100 tokens)
+  - Scalable & secure AI integration:
+      - Abstract AI model behind interface
+      - Model name & endpoint configurable
+      - API keys via environment variables / Keychain
+      - Handle errors (rate limits, invalid responses)
+      - Modular AI logic for easy replacement
+
+## Linear Ticket Guidelines
+linear_ticket_guidelines:
+  - Small actionable tickets
+  - Include title, description, acceptance, dependencies
+  - Tag tickets: [UI], [AI], [Database], [Logic], [Testing]
+  - Reference PRD section
+  - Use MCP to map tickets → code
+  - Update ticket status on completion/testing
+
+## Coding Workflow Guidelines
+coding_workflow_guidelines:
+  - Phase 1: Project setup (Xcode + MCP + Cursor rules)
+  - Phase 2: Database schema & helpers
+  - Phase 3: UI components & reusable views
+  - Phase 4: AI integration & parsing logic (secure/scalable)
+  - Phase 5: Chat flow
+  - Phase 6: Testing & QA
+  - Phase 7: Future enhancements
+  - Commit small testable units
+  - Unit tests for CoreData CRUD
+  - AI parsing tested with 20 varied messages
+
+## Error Handling Guidelines
+error_handling_guidelines:
+  - Validate all input before CoreData
+  - Catch/log CoreData errors
+  - Handle AI parsing failures gracefully
+  - User-friendly error messages
+  - Prevent crashes from malformed data
+
+## Documentation Guidelines
+documentation_guidelines:
+  - Header comments for each file
+  - Document each public function
+  - Maintain changelog for Cursor code
+  - Reference PRD or Linear ticket in implementation
+
+## Future Scalability Guidelines
+future_scalability_guidelines:
+  - Design CoreData to migrate easily to Supabase
+  - Keep AI modular for HealthKit / multi-device
+  - Reusable components for dashboard or new features
+
+## Cursor Rules Notes
+cursor_rules_notes:
+  - Always read this rules file before generating code
+  - Follow PRD
+  - Ask for clarification if instructions are ambiguous
+  - MCP: Figma → SwiftUI
+  - Treat Linear tickets as self-contained coding tasks
