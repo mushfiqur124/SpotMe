@@ -101,10 +101,8 @@ class AIService: AIServiceProtocol, ObservableObject {
                 dateFormatter.dateStyle = .short
                 prompt += "- \(dateFormatter.string(from: workout.date ?? Date())): \(workout.dayType ?? "") "
                 
-                if let exercises = workout.exercises?.allObjects as? [Exercise] {
-                    let exerciseNames = exercises.compactMap { $0.name }.joined(separator: ", ")
-                    prompt += "(\(exerciseNames))\n"
-                }
+                // Exercise data will be implemented in Phase 4
+                prompt += "\n"
             }
         }
         

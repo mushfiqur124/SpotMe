@@ -27,7 +27,7 @@ struct ChatSession: Identifiable, Codable {
     let id: UUID
     let title: String
     let date: Date
-    let dayType: String?
+    var dayType: String?
     var messages: [ChatMessage]
     
     init(id: UUID = UUID(), title: String, date: Date = Date(), dayType: String? = nil) {

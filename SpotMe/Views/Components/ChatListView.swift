@@ -164,7 +164,7 @@ struct ChatListView: View {
         .buttonStyle(PlainButtonStyle())
     }
     
-    private func scrollToBottomButton(proxy: ScrollViewReader) -> some View {
+    private func scrollToBottomButton(proxy: ScrollViewProxy) -> some View {
         Button(action: {
             scrollToBottom(proxy: proxy, animated: true)
         }) {
@@ -184,7 +184,7 @@ struct ChatListView: View {
     
     // MARK: - Private Methods
     
-    private func scrollToBottom(proxy: ScrollViewReader, animated: Bool = true) {
+    private func scrollToBottom(proxy: ScrollViewProxy, animated: Bool = true) {
         let targetID: AnyHashable
         
         if isTyping {

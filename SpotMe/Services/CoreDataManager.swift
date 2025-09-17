@@ -63,15 +63,15 @@ class CoreDataManager: ObservableObject {
     
     /// Add exercise to a workout
     func addExercise(to workout: Workout, name: String, sets: Int16, reps: Int16, weight: Double) -> Exercise {
-        let exercise = Exercise(context: viewContext, 
-                               name: name, 
-                               sets: sets, 
-                               reps: reps, 
-                               weight: weight, 
-                               workout: workout)
-        
-        // Check if this is a PR
-        exercise.checkForPR(context: viewContext)
+        let exercise = Exercise(context: viewContext)
+        exercise.id = UUID()
+        exercise.name = name
+        exercise.sets = sets
+        exercise.reps = reps
+        exercise.weight = weight
+        exercise.totalWeight = Double(sets) * Double(reps) * weight
+        exercise.prFlag = false // Will implement PR checking later
+        exercise.workoutID = workout.id
         
         saveContext()
         return exercise
@@ -95,7 +95,8 @@ class CoreDataManager: ObservableObject {
     func fetchLastExercise(named exerciseName: String) -> Exercise? {
         let request: NSFetchRequest<Exercise> = Exercise.fetchRequest()
         request.predicate = NSPredicate(format: "name == %@", exerciseName)
-        request.sortDescriptors = [NSSortDescriptor(keyPath: \Exercise.workout.date, ascending: false)]
+        // Sort by exercise name for now - workout relationship will be implemented in Phase 4
+        request.sortDescriptors = [NSSortDescriptor(keyPath: \Exercise.name, ascending: true)]
         request.fetchLimit = 1
         
         do {
@@ -133,14 +134,32 @@ extension CoreDataManager {
     /// Create sample data for previews and testing
     static func createSampleData(in context: NSManagedObjectContext) {
         // Create sample workout
-        let workout = Workout(context: context, 
-                             date: Date(), 
-                             dayType: DayType.push.rawValue, 
-                             notes: "Great workout!")
+        let workout = Workout(context: context)
+        workout.id = UUID()
+        workout.date = Date()
+        workout.dayType = DayType.push.rawValue
+        workout.notes = "Great workout!"
         
         // Add sample exercises
-        _ = Exercise(context: context, name: "Bench Press", sets: 3, reps: 8, weight: 135.0, workout: workout)
-        _ = Exercise(context: context, name: "Incline Press", sets: 3, reps: 10, weight: 115.0, workout: workout)
+        let exercise1 = Exercise(context: context)
+        exercise1.id = UUID()
+        exercise1.name = "Bench Press"
+        exercise1.sets = 3
+        exercise1.reps = 8
+        exercise1.weight = 135.0
+        exercise1.totalWeight = 3240.0 // 3 * 8 * 135
+        exercise1.prFlag = false
+        exercise1.workoutID = workout.id
+        
+        let exercise2 = Exercise(context: context)
+        exercise2.id = UUID()
+        exercise2.name = "Incline Press"
+        exercise2.sets = 3
+        exercise2.reps = 10
+        exercise2.weight = 115.0
+        exercise2.totalWeight = 3450.0 // 3 * 10 * 115
+        exercise2.prFlag = false
+        exercise2.workoutID = workout.id
         
         try? context.save()
     }

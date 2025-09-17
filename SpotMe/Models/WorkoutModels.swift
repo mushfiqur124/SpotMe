@@ -25,24 +25,6 @@ extension Workout {
 // MARK: - Exercise Entity Extension  
 extension Exercise {
     
-    /// Convenience initializer for creating a new exercise
-    convenience init(context: NSManagedObjectContext, 
-                    name: String, 
-                    sets: Int16, 
-                    reps: Int16, 
-                    weight: Double, 
-                    workout: Workout) {
-        self.init(context: context)
-        self.id = UUID()
-        self.name = name
-        self.sets = sets
-        self.reps = reps
-        self.weight = weight
-        self.totalWeight = Double(sets) * Double(reps) * weight
-        self.prFlag = false
-        self.workout = workout
-    }
-    
     /// Calculate total weight lifted for this exercise
     func calculateTotalWeight() {
         totalWeight = Double(sets) * Double(reps) * weight
