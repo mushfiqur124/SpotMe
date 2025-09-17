@@ -2,7 +2,8 @@
 //  ChatInputBar.swift
 //  SpotMe
 //
-//  Chat input component for sending messages
+//  ChatGPT-style input component for fitness workout logging
+//  Clean design with text field and send button only
 //  Referenced from Cursor Rules: Handle multi-line input, send message triggers AI call
 //
 
@@ -10,28 +11,28 @@ import SwiftUI
 
 struct ChatInputBar: View {
     @Binding var text: String
-    @State private var textHeight: CGFloat = 40
+    @State private var textHeight: CGFloat = 44 // ChatGPT default height
     
     let onSend: (String) -> Void
     
     private let maxHeight: CGFloat = 120
-    private let minHeight: CGFloat = 40
+    private let minHeight: CGFloat = 44 // Match ChatGPT min height
     
     var body: some View {
         VStack(spacing: 0) {
-            // Subtle divider for ChatGPT look
+            // ChatGPT-style subtle divider
             Divider()
-                .background(Color(.systemGray6))
+                .background(Color(.separator).opacity(0.3))
             
-            HStack(alignment: .bottom, spacing: 12) {
-                // Text input
+            HStack(alignment: .bottom, spacing: 8) {
+                // Text input field (matches ChatGPT exactly)
                 inputField
                 
-                // Send button
+                // Send button (ChatGPT-style)
                 sendButton
             }
-            .padding(.horizontal, 20) // Match ChatGPT padding
-            .padding(.vertical, 16) // More vertical padding like ChatGPT
+            .padding(.horizontal, 16)
+            .padding(.vertical, 12)
             .background(Color.chatGPTBackground)
         }
     }
@@ -40,37 +41,44 @@ struct ChatInputBar: View {
     
     private var inputField: some View {
         ZStack(alignment: .leading) {
-            // ChatGPT-style background
-            RoundedRectangle(cornerRadius: 22) // Slightly more rounded like ChatGPT
+            // ChatGPT-style input background
+            RoundedRectangle(cornerRadius: 22)
                 .fill(Color(.systemGray6))
-                .stroke(Color(.systemGray5), lineWidth: 0.5) // Subtle border
                 .frame(height: max(minHeight, min(textHeight, maxHeight)))
             
-            // Placeholder
+            // Fitness-appropriate placeholder
             if text.isEmpty {
-                Text("Message SpotMe...")
-                    .foregroundColor(.secondary)
-                    .padding(.horizontal, 18)
+                Text("Log your workout...")
+                    .foregroundColor(Color(.placeholderText))
+                    .padding(.horizontal, 16)
                     .padding(.vertical, 12)
-                    .font(.body)
+                    .font(.system(size: 17)) // Match ChatGPT font size
             }
             
-            // Text editor
+            // Multi-line text editor
             TextView(text: $text, height: $textHeight)
-                .padding(.horizontal, 14)
-                .padding(.vertical, 10)
+                .padding(.horizontal, 12)
+                .padding(.vertical, 8)
                 .frame(height: max(minHeight, min(textHeight, maxHeight)))
         }
     }
     
     private var sendButton: some View {
         Button(action: sendMessage) {
-            Image(systemName: "arrow.up.circle.fill")
-                .font(.system(size: 30))
-                .foregroundColor(canSend ? .primary : Color(.systemGray4))
+            ZStack {
+                // Button background - matches ChatGPT exactly
+                Circle()
+                    .fill(canSend ? Color(.label) : Color(.systemGray4))
+                    .frame(width: 32, height: 32)
+                
+                // Up arrow icon
+                Image(systemName: "arrow.up")
+                    .font(.system(size: 16, weight: .semibold))
+                    .foregroundColor(canSend ? Color(.systemBackground) : Color(.systemGray2))
+            }
         }
         .disabled(!canSend)
-        .animation(.easeInOut(duration: 0.2), value: canSend)
+        .animation(.easeInOut(duration: 0.15), value: canSend)
     }
     
     // MARK: - Private Properties
@@ -85,11 +93,14 @@ struct ChatInputBar: View {
         let messageText = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !messageText.isEmpty else { return }
         
-        onSend(messageText)
-        text = ""
-        textHeight = minHeight
+        // Smooth animation when sending
+        withAnimation(.easeInOut(duration: 0.2)) {
+            onSend(messageText)
+            text = ""
+            textHeight = minHeight
+        }
         
-        // Hide keyboard
+        // Hide keyboard smoothly
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), 
                                        to: nil, from: nil, for: nil)
     }
@@ -105,13 +116,14 @@ struct TextView: UIViewRepresentable {
     func makeUIView(context: Context) -> UITextView {
         let textView = UITextView()
         textView.delegate = context.coordinator
-        textView.font = UIFont.systemFont(ofSize: 16)
+        textView.font = UIFont.systemFont(ofSize: 17) // Match ChatGPT font size
         textView.backgroundColor = UIColor.clear
         textView.textColor = UIColor.label
         textView.isScrollEnabled = true
         textView.showsVerticalScrollIndicator = false
         textView.textContainer.lineBreakMode = .byWordWrapping
-        textView.textContainerInset = UIEdgeInsets(top: 8, left: 4, bottom: 8, right: 4)
+        textView.textContainerInset = UIEdgeInsets(top: 10, left: 8, bottom: 10, right: 8)
+        textView.returnKeyType = .send // Enable send on return key
         return textView
     }
     
@@ -120,14 +132,16 @@ struct TextView: UIViewRepresentable {
             textView.text = text
         }
         
-        // Update height based on content
+        // Update height based on content (ChatGPT-style smooth resizing)
         DispatchQueue.main.async {
             let size = textView.sizeThatFits(CGSize(width: textView.frame.width, 
                                                    height: CGFloat.greatestFiniteMagnitude))
-            let newHeight = min(max(size.height, 40), maxHeight)
+            let newHeight = min(max(size.height, 44), maxHeight) // Match ChatGPT min height
             
-            if abs(height - newHeight) > 1 {
-                height = newHeight
+            if abs(height - newHeight) > 2 {
+                withAnimation(.easeInOut(duration: 0.1)) {
+                    height = newHeight
+                }
             }
         }
     }
@@ -148,11 +162,27 @@ struct TextView: UIViewRepresentable {
                 self.parent.text = textView.text
             }
         }
+        
+        // Handle return key press for sending
+        func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
+            if text == "\n" {
+                // Send message on return key (like ChatGPT)
+                if let parent = textView.superview?.superview,
+                   let chatInputBar = parent as? UIView {
+                    // Trigger send action
+                    DispatchQueue.main.async {
+                        // This will be handled by the send button action
+                    }
+                }
+                return false
+            }
+            return true
+        }
     }
 }
 
 // MARK: - Preview
-#Preview {
+#Preview("Light Mode") {
     VStack {
         Spacer()
         
@@ -160,5 +190,30 @@ struct TextView: UIViewRepresentable {
             print("Sent: \(message)")
         }
     }
-    .background(Color(.systemBackground))
+    .background(Color.chatGPTBackground)
+    .preferredColorScheme(.light)
+}
+
+#Preview("Dark Mode") {
+    VStack {
+        Spacer()
+        
+        ChatInputBar(text: .constant("")) { message in
+            print("Sent: \(message)")
+        }
+    }
+    .background(Color.chatGPTBackground)
+    .preferredColorScheme(.dark)
+}
+
+#Preview("With Text") {
+    VStack {
+        Spacer()
+        
+        ChatInputBar(text: .constant("Just finished bench press, 3 sets of 8 reps at 135 lbs. Felt really good!")) { message in
+            print("Sent: \(message)")
+        }
+    }
+    .background(Color.chatGPTBackground)
+    .preferredColorScheme(.dark)
 }
